@@ -1,4 +1,5 @@
-import { Column, Entity, PrimaryGeneratedColumn } from "typeorm";
+import { Inventory } from "src/inventory/entities/inventory.entity";
+import { Column, Entity, JoinColumn, OneToOne, PrimaryGeneratedColumn } from "typeorm";
 
 @Entity()
 export class Product {
@@ -51,7 +52,9 @@ export class Product {
     })
     isActive: boolean;
 
-    // falta la relación inventory
+    @OneToOne(() => Inventory)
+    @JoinColumn()
+    inventory: Inventory;
 
     // tambien con ventas para generar la factura
 
