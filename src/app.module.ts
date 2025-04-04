@@ -5,6 +5,7 @@ import { AuthModule } from './auth/auth.module';
 import { CustomersModule } from './customers/customers.module';
 import { ProductsModule } from './products/products.module';
 import { InventoryModule } from './inventory/inventory.module';
+import { EmailModule } from './email/email.module';
 
 @Module({
   imports: [
@@ -18,10 +19,11 @@ import { InventoryModule } from './inventory/inventory.module';
         rejectUnauthorized: false, 
       },
     }),
+    EmailModule,
     AuthModule,
     CustomersModule,
     ProductsModule,
-    InventoryModule
+    InventoryModule,
   ],
   controllers: [],
   providers: [],
