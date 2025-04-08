@@ -1,62 +1,30 @@
-import { Inventory } from "src/inventory/entities/inventory.entity";
-import { Column, Entity, JoinColumn, OneToOne, PrimaryGeneratedColumn } from "typeorm";
+import { Column, Entity, JoinColumn, ManyToOne, OneToMany, OneToOne, PrimaryGeneratedColumn } from "typeorm";
 
 @Entity()
 export class Product {
+  @PrimaryGeneratedColumn('uuid')
+  id: string;
 
-    @PrimaryGeneratedColumn('uuid')
-    id: string;
+  @Column('text')
+  fullName: string;
 
-    @Column({
-        type: 'text',
-        nullable: false
-    })
-    fullName: string;
+  @Column('text', { nullable: true })
+  description: string;
 
-    @Column({
-        type: 'text',
-        nullable: true
-    })
-    description: string;
+  @Column('float', { default: 0 })
+  price: number;
 
-    @Column({
-        type: 'float',
-        default: 0
-    })
-    price: number;
+  @Column('int', { default: 0 })
+  lot: number;
 
-    @Column({
-        type: 'int',
-        default: 0,
-        nullable: false
-    })
-    lot: number;
+  @Column('text', { nullable: true })
+  imageProduct: string;
 
-    @Column({
-        type: 'text',
-        default: '',
-        nullable: true
-    })
-    imageProduct: string;
+  @Column('text', { default: 'ferreteria' })
+  category: string;
 
-    @Column({
-        type: 'text',
-        default: 'ferreteria'
-    })
-    category: string;
-
-
-    @Column({
-        type: 'boolean',
-        default: true
-    })
-    isActive: boolean;
-
-    @OneToOne(() => Inventory)
-    @JoinColumn()
-    inventory: Inventory;
-
-    // tambien con ventas para generar la factura
-
-
+  @Column('boolean', { default: true })
+  isActive: boolean;
 }
+
+

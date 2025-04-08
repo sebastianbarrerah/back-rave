@@ -6,10 +6,11 @@ import { Product } from './entities/product.entity';
 import { InventoryModule } from 'src/inventory/inventory.module';
 import { Inventory } from 'src/inventory/entities/inventory.entity';
 import { InventoryService } from 'src/inventory/inventory.service';
+import { Sale } from 'src/sales/entities/sale.entity';
 
 @Module({
   imports: [
-    TypeOrmModule.forFeature([Product, Inventory]),
+    TypeOrmModule.forFeature([Product, Inventory, Sale]),
     forwardRef( () => InventoryModule )
     
   ],

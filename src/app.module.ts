@@ -6,6 +6,12 @@ import { CustomersModule } from './customers/customers.module';
 import { ProductsModule } from './products/products.module';
 import { InventoryModule } from './inventory/inventory.module';
 import { EmailModule } from './email/email.module';
+import { SalesModule } from './sales/sales.module';
+import { BusinessStatsModule } from './business-stats/business-stats.module';
+import { MetricsModule } from './metrics/metrics.module';
+import { InvoiceModule } from './invoice/invoice.module';
+import { SaleItemModule } from './sale-item/sale-item.module';
+import { InvoiceItemModule } from './invoice-item/invoice-item.module';
 
 @Module({
   imports: [
@@ -24,6 +30,12 @@ import { EmailModule } from './email/email.module';
     CustomersModule,
     ProductsModule,
     InventoryModule,
+    SalesModule,
+    BusinessStatsModule,
+    MetricsModule,
+    InvoiceModule,
+    SaleItemModule,
+    InvoiceItemModule,
   ],
   controllers: [],
   providers: [],

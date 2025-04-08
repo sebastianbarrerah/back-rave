@@ -1,38 +1,24 @@
-import { Column, CreateDateColumn, Entity, PrimaryGeneratedColumn } from "typeorm";
+import { Entity, Column, PrimaryGeneratedColumn, OneToMany } from 'typeorm';
+import { Sale } from 'src/sales/entities/sale.entity';
+import { Invoice } from 'src/invoice/entities/invoice.entity';
 
 @Entity()
 export class Customer {
+  @PrimaryGeneratedColumn('uuid')
+  id: string;
 
-    @PrimaryGeneratedColumn('uuid')
-    id?: string;
+  @Column({ nullable: true })
+  fullName: string;
 
-    @Column({
-        type: 'text',
-        nullable: false
-    })
-    fullName?: string;
-    
-    @Column({
-        type: 'text',
-        unique: true,
-        nullable: false
-    })
-    email?: string;
+  @Column({ nullable: true })
+  email: string;
 
-    @Column({
-        type: 'int',
-        default: 0
-    })
-    phone?: number;
+  @Column({ nullable: true })
+  phone: number;
 
-    @Column({
-        type: 'bool',
-        default: true
-    })
-    isActive?: boolean;
+  @OneToMany(() => Sale, (sale) => sale.customer)
+  sales: Sale[];
 
-    @CreateDateColumn()
-    createdAt?: Date;
-
-    // sales aqui se pone la relación con las ventas
+  @OneToMany(() => Invoice, (invoice) => invoice.customer)
+  invoices: Invoice[];
 }
