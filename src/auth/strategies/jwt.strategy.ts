@@ -1,40 +1,18 @@
-import { PassportStrategy } from "@nestjs/passport";
-import { User } from "../entities/users.entity";
-import { Ipayload } from "../interfaces/Ipayload.interface";
-import { ExtractJwt, Strategy } from 'passport-jwt';
-import { InjectRepository } from "@nestjs/typeorm";
-import { Repository } from "typeorm";
-import { Injectable, UnauthorizedException } from "@nestjs/common";
+import { Injectable } from "@nestjs/common"
+import { PassportStrategy } from "@nestjs/passport"
+import { ExtractJwt, Strategy } from "passport-jwt"
 
 @Injectable()
-export class JwtStrategy extends PassportStrategy(Strategy){
-  
-    constructor(
-      @InjectRepository(User)
-      private readonly userRepositoy: Repository<User>,
-    ) {
-        super({
-          jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
-          secretOrKey: 'MySE3cRETjWT',
-        });
-      }
+export class JwtStrategy extends PassportStrategy(Strategy) {
+  constructor() {
+    super({
+      jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
+      ignoreExpiration: false,
+      secretOrKey: "MySE3cRETjWT", // <-- hardcodeado aquí
+    })
+  }
 
-    async validate(payload: Ipayload ):Promise<User>{
-
-        const {email} = payload;
-
-        const user = await this.userRepositoy.findOne({where:{email}})
-
-        if(!user){
-          throw new UnauthorizedException('Token no valido');
-        }
-        
-        if(!user.isActive){
-          throw new UnauthorizedException('Usuario no autorizado');
-        }
-
-      return user;
-        
-    }
+  async validate(payload: any) {
+    return { userId: payload.sub, username: payload.username }
+  }
 }
-

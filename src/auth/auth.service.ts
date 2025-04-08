@@ -1,82 +1,118 @@
-import { BadRequestException, Injectable, Logger, UnauthorizedException } from "@nestjs/common";
-import { InjectRepository } from "@nestjs/typeorm";
-import { User } from "./entities/users.entity";
-import { Repository } from "typeorm";
-import * as bcrypt from "bcrypt";
-import { CreateUserDto, LoginDto } from "./dtos";
-import { JwtService } from "@nestjs/jwt";
-import { Ipayload } from "./interfaces/Ipayload.interface";
+import { Injectable, UnauthorizedException, BadRequestException } from "@nestjs/common"
+// import type { JwtService } from "@nestjs/jwt"
+// import type { UsersService } from "../users/users.service"
+import { LoginDto } from "./dto/login.dto"
+import { RegisterDto } from "./dto/register.dto"
+import * as bcrypt from "bcrypt"
+// import type { RolesService } from "../roles/roles.service"
+import { UsersService } from "../users/users.service"
+import { JwtService } from "@nestjs/jwt"
+import { RolesService } from "../roles/roles.service"
+
 
 @Injectable()
-
 export class AuthService {
-    
-    private readonly logger = new Logger();
-    constructor(
-        @InjectRepository(User)
-        private readonly userRepositoy: Repository<User>,
-        private jwtService: JwtService,
-    ) { }
+  constructor(
+    private usersService: UsersService,
+    private jwtService: JwtService,
+    private rolesService: RolesService,
+  ) {}
 
-    private generateJwt(payload:Ipayload){
-        const token = this.jwtService.sign(payload)
-        return token
+  async validateUser(email: string, password: string): Promise<any> {
+    const user = await this.usersService.findByEmail(email)
+    if (!user) {
+      throw new UnauthorizedException("Credenciales inválidas")
     }
 
-    async createUser(createUserDto: CreateUserDto) {
-        const { email, password, fullName, ...data } = createUserDto;
-
-        const verifyEmail = await this.userRepositoy.findOneBy({ email });
-        if (verifyEmail) {
-            throw new BadRequestException(`El email ${email} ya se encuentra inscrito`);
-        }
-
-        try {
-            const pass = bcrypt.hashSync(password, 10)
-            const newUser = this.userRepositoy.create({
-                fullName: createUserDto.fullName,
-                email: createUserDto.email,
-                password: pass
-            });
-            await this.userRepositoy.save(newUser);
-            return {
-                ...newUser,
-                token: this.generateJwt({fullName, email })
-            }
-
-        } catch (error) {
-            this.logger.error(error);
-            throw new BadRequestException('No se pudo crear el usuario');
-        }
+    const isPasswordValid = await bcrypt.compare(password, user.password)
+    if (!isPasswordValid) {
+      throw new UnauthorizedException("Credenciales inválidas")
     }
 
-    async login(userDto: LoginDto) {
-        const { password, email} = userDto;
+    const { password: _, ...result } = user
+    return result
+  }
 
-        try {
-            const user = await this.userRepositoy.findOne({
-                where: { email },
-                select: { email: true, password: true, fullName: true }
-            })
+  async login(loginDto: LoginDto) {
+    const user = await this.validateUser(loginDto.email, loginDto.password)
 
-            if (!user) {
-                throw new UnauthorizedException(`El email ${email} No tiene autorización`)
-            }
+    // Obtener los roles y permisos del usuario
+    const userWithRoles = await this.usersService.findOneWithRoles(user.id)
 
-            const pass = bcrypt.compareSync(password, user.password);
-
-            if (!pass) {
-                throw new UnauthorizedException('La contraseña es incorrecta')
-            }
-
-            return {
-                ...user,
-                token: this.generateJwt({fullName: user.fullName, email} )
-            }
-
-        } catch (error) {
-            this.logger.error(error);
-            throw new UnauthorizedException(error.message)
-        }
+    const payload = {
+      sub: user.id,
+      email: user.email,
+      name: user.name,
+      roles: userWithRoles.roles.map((role) => role.nombre),
     }
+
+    return {
+      user: {
+        id: user.id,
+        email: user.email,
+        name: user.name,
+        roles: userWithRoles.roles,
+      },
+      access_token: this.jwtService.sign(payload),
+    }
+  }
+
+  async register(registerDto: RegisterDto) {
+    // Verificar si el email ya existe
+    const existingUser = await this.usersService.findByEmail(registerDto.email)
+    if (existingUser) {
+      throw new BadRequestException("El email ya está registrado")
+    }
+
+    // Obtener el rol por defecto (vendedor o el que corresponda)
+    const defaultRole = await this.rolesService.findByName("Vendedor")
+    if (!defaultRole) {
+      throw new BadRequestException("No se pudo asignar un rol por defecto")
+    }
+
+    // Crear el usuario
+    const user = await this.usersService.create({
+      ...registerDto,
+      roles: [defaultRole],
+    })
+
+    // Generar token
+    const payload = {
+      sub: user.id,
+      email: user.email,
+      name: user.name,
+      roles: [defaultRole.nombre],
+    }
+
+    return {
+      user: {
+        id: user.id,
+        email: user.email,
+        name: user.name,
+        roles: [defaultRole],
+      },
+      access_token: this.jwtService.sign(payload),
+    }
+  }
+
+  async refreshToken(userId: number) {
+    const user = await this.usersService.findOne(userId)
+    if (!user) {
+      throw new UnauthorizedException("Usuario no encontrado")
+    }
+
+    // Obtener los roles y permisos del usuario
+    const userWithRoles = await this.usersService.findOneWithRoles(user.id)
+
+    const payload = {
+      sub: user.id,
+      email: user.email,
+      name: user.name,
+      roles: userWithRoles.roles.map((role) => role.nombre),
+    }
+
+    return {
+      access_token: this.jwtService.sign(payload),
+    }
+  }
 }

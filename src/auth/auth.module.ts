@@ -1,20 +1,25 @@
-import { Module } from "@nestjs/common";
-import { TypeOrmModule } from "@nestjs/typeorm";
-import { User } from "./entities/users.entity";
-import { AuthService } from "./auth.service";
-import { AuthController } from "./auth.controller";
-import { PassportModule } from "@nestjs/passport";
-import { JwtModule } from "@nestjs/jwt";
-import { JwtStrategy } from "./strategies/jwt.strategy";
+import { Module } from "@nestjs/common"
+import { JwtModule } from "@nestjs/jwt"
+import { PassportModule } from "@nestjs/passport"
+import { AuthService } from "./auth.service"
+import { AuthController } from "./auth.controller"
+import { UsersModule } from "../users/users.module"
+import { JwtStrategy } from "./strategies/jwt.strategy"
+import { LocalStrategy } from "./strategies/local.strategy"
+import { RolesModule } from "../roles/roles.module"
 
 @Module({
-    imports: [
-        TypeOrmModule.forFeature([User]),
-        PassportModule.register({defaultStrategy:'jwt'}),
-        JwtModule.register({secret: 'MySE3cRETjWT', signOptions: {expiresIn: '2h'}})
-    ],
-    providers: [AuthService, JwtStrategy],
-    controllers: [AuthController],
-    exports: [TypeOrmModule, JwtStrategy, PassportModule, JwtModule]
+  imports: [
+    UsersModule,
+    RolesModule,
+    PassportModule,
+    JwtModule.register({
+      secret: "MySE3cRETjWT", // Valor hardcodeado
+      signOptions: { expiresIn: "1d" },
+    }),
+  ],
+  controllers: [AuthController],
+  providers: [AuthService, JwtStrategy, LocalStrategy],
+  exports: [AuthService],
 })
 export class AuthModule {}
