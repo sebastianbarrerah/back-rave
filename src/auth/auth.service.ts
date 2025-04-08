@@ -65,7 +65,7 @@ export class AuthService {
     }
 
     // Obtener el rol por defecto (vendedor o el que corresponda)
-    const defaultRole = await this.rolesService.findByName("Vendedor")
+    const defaultRole = await this.rolesService.findByName("Administrador")
     if (!defaultRole) {
       throw new BadRequestException("No se pudo asignar un rol por defecto")
     }

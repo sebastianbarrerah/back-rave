@@ -43,7 +43,7 @@ export class RolesService {
     })
 
     if (!role) {
-      throw new NotFoundException(`Rol con ID ${id} no encontrado`)
+      throw new NotFoundException(`Rol con ID ${id} no encontrado`) 
     }
 
     return role

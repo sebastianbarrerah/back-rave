@@ -27,10 +27,12 @@ export class UsersService {
       password: hashedPassword,
     })
 
+    console.log(user)
     return this.usersRepository.save(user)
   }
 
   async findAll(): Promise<User[]> {
+    console.log("Find all")
     return this.usersRepository.find({
       relations: ["roles"],
       select: ["id", "name", "email", "isActive", "createdAt", "updatedAt"],
