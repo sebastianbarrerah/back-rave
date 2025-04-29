@@ -18,16 +18,20 @@ import { RolesModule } from "./roles/roles.module"
 @Module({
   imports: [
     TypeOrmModule.forRoot({
-      type: "postgres",
-      host: "dpg-cvhgfc8fnakc739ls5cg-a.oregon-postgres.render.com",
+      type: 'postgres',
+      host: 'dpg-d08m03ffte5s73c63adg-a.oregon-postgres.render.com',
       port: 5432,
-      username: "sebastianbh",
-      password: "sfu9J43qyVODFEWGfAnjtv3r9pYcf380",
-      database: "acabadosyestilos",
-      entities: [__dirname + "/**/*.entity{.ts,.js}"],
-      synchronize: true,
-      logging: true,
-      ssl: true,
+      username: 'root',
+      password: 'TdyIIRze7EUIhy3rSJ6ei7YMtKsZXEFH',
+      database: 'backacabadosyestilos',
+      entities: [__dirname + '/**/*.entity{.ts,.js}'],
+      synchronize: true,           
+      ssl: true,               
+      extra: {
+        ssl: {
+          rejectUnauthorized: false,
+        },
+      },
     }),
 
     AuthModule,
