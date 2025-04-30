@@ -26,7 +26,7 @@ async function bootstrap() {
 
   // Configuración de CORS
   app.enableCors({
-    origin: process.env.FRONTEND_URL || "http://localhost:3000",
+    origin: process.env.FRONTEND_URL || "http://localhost:3000" || "https://back-rave.onrender.com",
     methods: "GET,HEAD,PUT,PATCH,POST,DELETE",
     credentials: true,
   })
