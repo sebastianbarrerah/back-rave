@@ -15,6 +15,7 @@ export class VentasController {
   constructor(private readonly ventasService: VentasService) {}
 
   @Post()
+  @Roles("Administrador", "Gerente")
   @ApiOperation({ summary: 'Crear una nueva venta' })
   @ApiResponse({ status: 201, description: 'Venta creada exitosamente' })
   create(@Body() createVentaDto: CreateVentaDto) {
@@ -22,6 +23,7 @@ export class VentasController {
   }
 
   @Get()
+  @Roles("Administrador", "Gerente")
   @ApiOperation({ summary: "Obtener todas las ventas" })
   @ApiResponse({ status: 200, description: "Lista de ventas" })
   @ApiQuery({ name: "cliente", required: false, description: "Filtrar por cliente" })
@@ -50,6 +52,7 @@ export class VentasController {
   }
 
   @Get(':id')
+  @Roles("Administrador", "Gerente")
   @ApiOperation({ summary: 'Obtener una venta por ID' })
   @ApiResponse({ status: 200, description: 'Venta encontrada' })
   @ApiResponse({ status: 404, description: 'Venta no encontrada' })
