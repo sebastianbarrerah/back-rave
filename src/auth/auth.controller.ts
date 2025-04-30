@@ -31,6 +31,7 @@ export class AuthController {
     return this.authService.register(registerDto);
   }
 
+  @Public()
   @UseGuards(JwtAuthGuard)
   @Get('profile')
   @ApiBearerAuth()
@@ -40,6 +41,7 @@ export class AuthController {
     return req.user;
   }
 
+  @Public()
   @UseGuards(JwtAuthGuard)
   @Post('refresh')
   @ApiBearerAuth()
