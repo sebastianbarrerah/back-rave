@@ -6,6 +6,7 @@ import { UpdateVentaDto } from "./dto/update-venta.dto"
 import { JwtAuthGuard } from "../auth/guards/jwt-auth.guard"
 import { RolesGuard } from "../auth/guards/roles.guard"
 import { Roles } from "../auth/decorators/roles.decorator"
+import { Public } from "src/auth/decorators/public.decorator"
 
 @ApiTags("ventas")
 @Controller("ventas")
@@ -23,6 +24,7 @@ export class VentasController {
   }
 
   @Get()
+  @Public()
   @Roles("Administrador", "Gerente")
   @ApiOperation({ summary: "Obtener todas las ventas" })
   @ApiResponse({ status: 200, description: "Lista de ventas" })
