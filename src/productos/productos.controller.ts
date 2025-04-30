@@ -8,7 +8,9 @@ import { UpdateCategoriaDto } from "./dto/update-categoria.dto"
 import { JwtAuthGuard } from "../auth/guards/jwt-auth.guard"
 import { RolesGuard } from "../auth/guards/roles.guard"
 import { Roles } from "../auth/decorators/roles.decorator"
+import { Public } from "src/auth/decorators/public.decorator"
 
+@Public()
 @ApiTags("productos")
 @Controller("productos")
 @UseGuards(JwtAuthGuard, RolesGuard)
@@ -25,6 +27,7 @@ export class ProductosController {
     return this.productosService.createProducto(createProductoDto);
   }
 
+  @Public()
   @Get()
   @ApiOperation({ summary: "Obtener todos los productos" })
   @ApiResponse({ status: 200, description: "Lista de productos" })
@@ -42,6 +45,7 @@ export class ProductosController {
     return this.productosService.findAllProductos()
   }
 
+  @Public()
   @Get(':id')
   @ApiOperation({ summary: 'Obtener un producto por ID' })
   @ApiResponse({ status: 200, description: 'Producto encontrado' })
@@ -50,6 +54,7 @@ export class ProductosController {
     return this.productosService.findProductoById(+id);
   }
 
+  @Public()
   @Patch(":id")
   @Roles("Administrador", "Gerente")
   @ApiOperation({ summary: "Actualizar un producto" })
@@ -59,6 +64,7 @@ export class ProductosController {
     return this.productosService.updateProducto(+id, updateProductoDto)
   }
 
+  @Public()
   @Delete(':id')
   @Roles('Administrador', 'Gerente')
   @ApiOperation({ summary: 'Eliminar un producto' })
@@ -69,6 +75,7 @@ export class ProductosController {
   }
 
   // Endpoints para categorías
+  @Public()
   @Post('categorias')
   @Roles('Administrador', 'Gerente')
   @ApiOperation({ summary: 'Crear una nueva categoría' })
