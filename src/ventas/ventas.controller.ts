@@ -78,3 +78,4 @@ export class VentasController {
     return this.ventasService.remove(+id);
   }
 }
+
