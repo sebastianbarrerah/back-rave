@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, Query, UseGuards } from "@nestjs/common"
+import { Controller, Get, Post, Body, Patch, Param, Delete, Query, UseGuards, ParseIntPipe } from "@nestjs/common"
 import { ApiTags, ApiOperation, ApiResponse, ApiBearerAuth, ApiQuery } from "@nestjs/swagger"
 import { ProductosService } from "./productos.service"
 import { CreateProductoDto } from "./dto/create-producto.dto"
@@ -8,9 +8,7 @@ import { UpdateCategoriaDto } from "./dto/update-categoria.dto"
 import { JwtAuthGuard } from "../auth/guards/jwt-auth.guard"
 import { RolesGuard } from "../auth/guards/roles.guard"
 import { Roles } from "../auth/decorators/roles.decorator"
-import { Public } from "src/auth/decorators/public.decorator"
 
-@Public()
 @ApiTags("productos")
 @Controller("productos")
 @UseGuards(JwtAuthGuard, RolesGuard)
@@ -27,8 +25,8 @@ export class ProductosController {
     return this.productosService.createProducto(createProductoDto);
   }
 
-  @Public()
   @Get()
+  @Roles('Administrador', 'Gerente')
   @ApiOperation({ summary: "Obtener todos los productos" })
   @ApiResponse({ status: 200, description: "Lista de productos" })
   @ApiQuery({ name: "categoria", required: false, description: "Filtrar por categoría" })
@@ -45,37 +43,36 @@ export class ProductosController {
     return this.productosService.findAllProductos()
   }
 
-  @Public()
   @Get(':id')
+  @Roles('Administrador', 'Gerente')
   @ApiOperation({ summary: 'Obtener un producto por ID' })
   @ApiResponse({ status: 200, description: 'Producto encontrado' })
   @ApiResponse({ status: 404, description: 'Producto no encontrado' })
-  findProductoById(@Param('id') id: string) {
-    return this.productosService.findProductoById(+id);
+  findProductoById(@Param('id', ParseIntPipe) id: number) {
+    return this.productosService.findProductoById(id);
   }
+  
 
-  @Public()
+
   @Patch(":id")
   @Roles("Administrador", "Gerente")
   @ApiOperation({ summary: "Actualizar un producto" })
   @ApiResponse({ status: 200, description: "Producto actualizado exitosamente" })
   @ApiResponse({ status: 404, description: "Producto no encontrado" })
-  updateProducto(@Param('id') id: string, @Body() updateProductoDto: UpdateProductoDto) {
-    return this.productosService.updateProducto(+id, updateProductoDto)
+  updateProducto(@Param('id', ParseIntPipe) id: number, @Body() updateProductoDto: UpdateProductoDto) {
+    return this.productosService.updateProducto(id, updateProductoDto)
   }
 
-  @Public()
   @Delete(':id')
   @Roles('Administrador', 'Gerente')
   @ApiOperation({ summary: 'Eliminar un producto' })
   @ApiResponse({ status: 200, description: 'Producto eliminado exitosamente' })
   @ApiResponse({ status: 404, description: 'Producto no encontrado' })
-  removeProducto(@Param('id') id: string) {
-    return this.productosService.removeProducto(+id);
+  removeProducto(@Param('id', ParseIntPipe) id: number) {
+    return this.productosService.removeProducto(id);
   }
 
   // Endpoints para categorías
-  @Public()
   @Post('categorias')
   @Roles('Administrador', 'Gerente')
   @ApiOperation({ summary: 'Crear una nueva categoría' })
@@ -84,18 +81,20 @@ export class ProductosController {
     return this.productosService.createCategoria(createCategoriaDto);
   }
 
-  @Get("categorias")
+  @Get('categorias/all')
+  @Roles('Administrador', 'Gerente')
   @ApiOperation({ summary: "Obtener todas las categorías" })
   @ApiResponse({ status: 200, description: "Lista de categorías" })
-  findAllCategorias() {
-    return this.productosService.findAllCategorias()
+  async findAllCategorias() {
+    return await this.productosService.findAllCategorias()
   }
 
   @Get('categorias/:id')
+  @Roles('Administrador', 'Gerente')
   @ApiOperation({ summary: 'Obtener una categoría por ID' })
   @ApiResponse({ status: 200, description: 'Categoría encontrada' })
   @ApiResponse({ status: 404, description: 'Categoría no encontrada' })
-  findCategoriaById(@Param('id') id: string) {
+  findCategoriaById(@Param('id', ParseIntPipe) id: number) {
     return this.productosService.findCategoriaById(+id);
   }
 
@@ -104,7 +103,7 @@ export class ProductosController {
   @ApiOperation({ summary: "Actualizar una categoría" })
   @ApiResponse({ status: 200, description: "Categoría actualizada exitosamente" })
   @ApiResponse({ status: 404, description: "Categoría no encontrada" })
-  updateCategoria(@Param('id') id: string, @Body() updateCategoriaDto: UpdateCategoriaDto) {
+  updateCategoria(@Param('id', ParseIntPipe) id: number, @Body() updateCategoriaDto: UpdateCategoriaDto) {
     return this.productosService.updateCategoria(+id, updateCategoriaDto)
   }
 
@@ -113,7 +112,7 @@ export class ProductosController {
   @ApiOperation({ summary: 'Eliminar una categoría' })
   @ApiResponse({ status: 200, description: 'Categoría eliminada exitosamente' })
   @ApiResponse({ status: 404, description: 'Categoría no encontrada' })
-  removeCategoria(@Param('id') id: string) {
+  removeCategoria(@Param('id', ParseIntPipe) id: number) {
     return this.productosService.removeCategoria(+id);
   }
 }

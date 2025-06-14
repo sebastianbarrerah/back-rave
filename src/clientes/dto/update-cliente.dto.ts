@@ -31,7 +31,7 @@ export class UpdateClienteDto extends PartialType(CreateClienteDto) {
 
   @ApiPropertyOptional({ example: "+573001234567" })
   @IsOptional()
-  @IsPhoneNumber(null, { message: "El teléfono debe tener un formato válido" })
+  @IsPhoneNumber("ES", { message: "El teléfono debe tener un formato válido" })
   telefono?: string
 
   @ApiPropertyOptional({ example: "Calle 123 #45-67" })

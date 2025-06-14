@@ -32,6 +32,7 @@ export class Cliente {
   @Column({ default: true })
   activo: boolean
 
+
   @CreateDateColumn()
   createdAt: Date
 

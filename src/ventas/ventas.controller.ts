@@ -6,11 +6,11 @@ import { UpdateVentaDto } from "./dto/update-venta.dto"
 import { JwtAuthGuard } from "../auth/guards/jwt-auth.guard"
 import { RolesGuard } from "../auth/guards/roles.guard"
 import { Roles } from "../auth/decorators/roles.decorator"
-import { Public } from "src/auth/decorators/public.decorator"
 
 @ApiTags("ventas")
 @Controller("ventas")
 @UseGuards(JwtAuthGuard, RolesGuard)
+@Roles("Administrador", "Gerente")
 @ApiBearerAuth()
 export class VentasController {
   constructor(private readonly ventasService: VentasService) {}
@@ -24,7 +24,6 @@ export class VentasController {
   }
 
   @Get()
-  @Public()
   @Roles("Administrador", "Gerente")
   @ApiOperation({ summary: "Obtener todas las ventas" })
   @ApiResponse({ status: 200, description: "Lista de ventas" })
@@ -50,7 +49,8 @@ export class VentasController {
       return this.ventasService.findByFecha(new Date(fechaInicio), new Date(fechaFin))
     }
 
-    return this.ventasService.findAll()
+  const ventasTotales = await this.ventasService.findAll()
+  return ventasTotales.length > 0 ? ventasTotales : []
   }
 
   @Get(':id')

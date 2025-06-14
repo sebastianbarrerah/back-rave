@@ -28,7 +28,6 @@ export class CreateClienteDto {
   email: string
 
   @ApiProperty({ example: "+573001234567" })
-  @IsPhoneNumber(null, { message: "El teléfono debe tener un formato válido" })
   @IsNotEmpty({ message: "El teléfono es requerido" })
   telefono: string
 

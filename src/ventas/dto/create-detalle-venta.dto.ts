@@ -12,4 +12,9 @@ export class CreateDetalleVentaDto {
   @IsNumber({}, { message: "La cantidad debe ser un número" })
   @Min(1, { message: "La cantidad debe ser mayor a 0" })
   cantidad: number
+
+  @ApiProperty({ example: 1 })
+  @IsNotEmpty({ message: "El precio es requerido" })
+  @IsNumber({}, { message: "El precio debe ser un número" })
+  precio: number
 }

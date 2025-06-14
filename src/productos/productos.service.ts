@@ -110,7 +110,8 @@ export class ProductosService {
   }
 
   async findAllCategorias(): Promise<Categoria[]> {
-    return this.categoriasRepository.find()
+    const categoriasAll = await this.categoriasRepository.find()
+    return categoriasAll
   }
 
   async findCategoriaById(id: number): Promise<Categoria> {
